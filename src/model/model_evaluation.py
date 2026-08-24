@@ -6,12 +6,24 @@ from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
 import json
 import mlflow
 import mlflow.sklearn
-import dagshub
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
 
-dagshub.init(repo_owner='shanshad0999', repo_name='mlops-mini-project', mlflow=True)
-mlflow.set_tracking_uri('https://dagshub.com/shanshad0999/mlops-mini-project.mlflow')
+dagshub_token = os.getenv("DAGSHUB_TOKEN")
+if not dagshub_token:
+    raise EnvironmentError("DAGSHUB_TOKEN environment variable is not set")
+
+os.environ["MLFLOW_TRACKING_USERNAME"] = "shanshad0999"
+os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+dagshub_url = "https://dagshub.com"
+repo_owner = "shanshad0999"
+repo_name = "mlops-mini-project"
+
+# Set up MLflow tracking URI
+mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
 
 logger=logging.getLogger("Model evaluation")
 logger.setLevel(logging.DEBUG)
