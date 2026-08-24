@@ -1,4 +1,6 @@
 [core]
-    remote = localstore
+    remote = mybucket
 ['remote "localstore"']
     url = C:\Users\shans\AppData\Local\Temp\emotion_data
+['remote "mybucket"']
+    url = s3://shanshaddemo
