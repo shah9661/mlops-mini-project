@@ -8,6 +8,7 @@ from nltk.stem import WordNetLemmatizer
 import re
 import string
 from sklearn.preprocessing import LabelEncoder
+import pickle
 
 
 
@@ -31,13 +32,22 @@ logger.addHandler(file_handler)
 nltk.download('stopwords')
 nltk.download('wordnet')
 
-def label_encoding(df:pd.DataFrame)->pd.DataFrame:
-    """Apply label encoding to the sentiment column."""
+def label_encoding(train_df: pd.DataFrame, test_df: pd.DataFrame, file_path: str):
     try:
         le = LabelEncoder()
-        df['sentiment'] = le.fit_transform(df['sentiment'])
-        logger.info('Label encoding applied successfully.')
-        return df
+
+        train_df["sentiment"] = le.fit_transform(train_df["sentiment"])
+        test_df["sentiment"] = le.transform(test_df["sentiment"])
+
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        with open(file_path, "wb") as f:
+            pickle.dump(le, f)
+
+        logger.info(f"Label encoder saved successfully to {file_path}")
+
+        return train_df, test_df
+
     except Exception as e:
         logger.error(f"Error during label encoding: {e}")
         raise
@@ -108,11 +118,13 @@ def normalize_text(df):
 
 def main():
     try:
+        
         # Fetch the data from data/raw
         train_data = pd.read_csv('./data/raw/train.csv',keep_default_na=False)
         test_data = pd.read_csv('./data/raw/test.csv',keep_default_na=False)
-        train_label=label_encoding(train_data)
-        test_label=label_encoding(test_data)
+
+        train_label, test_label = label_encoding(train_data,test_data,"models/label_encoder.pkl")
+
         logger.debug('data loaded properly')
 
         # Transform the data

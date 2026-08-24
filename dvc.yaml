@@ -15,6 +15,7 @@ stages:
     - src/data_preprocessing.py
     outs:
     - data/interim
+    - models/label_encoder.pkl
   features_engineering:
     cmd: python src/features_engineering.py
     deps:
@@ -42,6 +43,11 @@ stages:
     - src/model/model_evaluation.py
     outs:
     - reports
+  model_register:
+    cmd: python src/model/model_registry.py
+    deps:
+    - reports/experiment_info.json
+    - src/model/model_registry.py
 metrics:
 - dvclive/metrics.json
 plots:

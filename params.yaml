@@ -1,8 +1,10 @@
 data_ingestion:
-  test_size: 0.4
-  
-feature_engineering:
-  max_features: 100
+  test_size: 0.2
 
-# model_building:
-#   n_estimators: 50
+feature_engineering:
+  max_features: 200
+
+model_building:
+  C: 1
+  penalty: l2
+  solver: lbfgs

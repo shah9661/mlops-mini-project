@@ -56,9 +56,9 @@ def load_data(path:str)->pd.DataFrame:
         raise
 
 
-def train_model(X_train_df:np.ndarray,y_train:np.ndarray)->LogisticRegression:
+def train_model(X_train_df:np.ndarray,y_train:np.ndarray,c,penalty,solver)->LogisticRegression:
     try:
-        clf=LogisticRegression()
+        clf=LogisticRegression(C=c,penalty=penalty,solver=solver)
         clf.fit(X_train_df,y_train)
         logger.debug('Model train complete')
         return clf
@@ -82,12 +82,15 @@ def save_model(model,file_path:str)->None:
 
 def main():
     try:
-        # config=load_prams('params.yaml')
-        # n_estimators=config['model_building']['n_estimators']
+        config=load_prams('params.yaml')
+        c=config['model_building']['C']
+        penalty=config['model_building']['penalty']
+        solver=config['model_building']['solver']
+
         train=load_data("./data/processed/train_bow.csv")
         X_train=train.iloc[:,0:-1].values
         y_train=train.iloc[:,-1].values
-        model=train_model(X_train,y_train)
+        model=train_model(X_train,y_train,c,penalty,solver)
         save_model(model,'models/model.pkl')
     except Exception as e:
         logger.error(f'Failed to complete the model {e}')
